@@ -13,11 +13,17 @@ from cvzone.PoseModule import PoseDetector
 counter = 0
 direction = 0
 
+
 def count_push_ups_from_video(video_path):
     # Existing code for counting push-ups from the video
     global counter, direction
+    counter = 0
+    direction = 0
+
     cap = cv2.VideoCapture(video_path)
     pd = PoseDetector(trackCon=0.70, detectionCon=0.70)
+
+    
 
     while True:
         ret, img = cap.read()
@@ -110,6 +116,7 @@ def pushup_counter_api(request):
 
             # Call the push-up counting function
             push_up_count = count_push_ups_from_video(video_path)
+            
 
             # Delete the temporary video file
             import os
