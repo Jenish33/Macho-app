@@ -8,6 +8,9 @@ import cookieSession from 'cookie-session';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { spawn } from 'child_process';
+import axios from 'axios';
+import FormData from 'form-data';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +20,10 @@ const port = 3001;
 
 // Multer configuration for video uploaded files
 const upload = multer({ dest: 'uploads/' })
+
+
+// Middleware for CORS
+app.use(cors());
 
 // Middleware for cookie session
 app.use(
@@ -125,29 +132,43 @@ app.get(
   }
 );
 
-app.post('/upload', upload.single('video'), (req, res) => {
-  try{
-    if(!req.file){
-      return res.status(400).json({ error: 'No Video file uploaded'});
+app.post('/upload', upload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No Video file uploaded' });
     }
 
     // Get the path of the uploaded video file
+    console.log("***********************************************************")
+    console.log("Got the request", req.file.path)
     const videoFilePath = req.file.path;
+    
 
-    // Call the python AI Script ti count the push ups from the video
-    countPushUps(videoFilePath, (pushUpCount) => {
-      console.log('Push up count:', pushUpCount)
-      // Delete the uploaded video file after processing
-      fs.unlinkSync(videoFilePath);
+    // Create a FormData object and append the video file to it
+    const formData = new FormData();
+    formData.append('video', fs.createReadStream(videoFilePath));
 
-      //return the push up count as a response
-      res.json({ pushUpCount });
-    })
+    // Call the Python API using axios
+    console.log("Calling the python API...")
+    const pythonApiUrl = 'http://127.0.0.1:8000/api/pushup-counter/';
+    const response = await axios.post(pythonApiUrl, formData, {
+      headers: formData.getHeaders(),
+    });
+
+    console.log("Got the response from python API...", response.data)
+    // Get the push-up count from the response
+    const pushUpCount = {...response.data};
+
+    // Delete the uploaded video file after processing
+    fs.unlinkSync(videoFilePath);
+
+    // Return the push-up count as a response
+    res.send(pushUpCount);
   } catch (err) {
-    console.log("Error while processing the video", err);
-    return res.status(500).json({ error: 'Something went wrong' });
+    console.log('Error while processing the video');
+    return res.status(500).json({ error: 'Something went wrong', detail: err });
   }
-})
+});
 
 
 app.listen(port, () => {
