@@ -128,7 +128,7 @@ app.get(
   (req, res) => {
     // Redirect to the frontend dashboard after successful authentication
     console.log()
-    res.redirect('http://localhost:3000/dashboard');
+    res.redirect('http://localhost:5173/#/home');
   }
 );
 
