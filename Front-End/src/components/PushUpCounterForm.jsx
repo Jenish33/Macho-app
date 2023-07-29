@@ -10,6 +10,7 @@ const PushUpCounterForm = () => {
 	const { Dragger } = Upload;
 	const [videoFile, setVideoFile] = useState(null);
 	const [result, setResult] = useState('')
+	const [loading, setLoading] = useState(false);
 
 	const handleVideoChange = (info) => {
     // We only allow a single file to be uploaded
@@ -29,9 +30,9 @@ const PushUpCounterForm = () => {
 			const formData = new FormData();
 			formData.append('video', videoFile);
 			setResult('Processing...');
-
+			setLoading(true);
 			const response = await axios.post('http://localhost:3001/upload/', formData);
-
+			setLoading(false);
 			if (response.data) {
         message.success('Processed successfully');
         setResult(response.data.push_up_count);
@@ -65,8 +66,15 @@ const PushUpCounterForm = () => {
   		</p>
   	</Dragger>
 
-		<Button className='submit-btn' onClick={() => handleUpload()} >
-			Process Video
+		<Button className='submit-btn' onClick={() => handleUpload()} disabled={loading}>
+			{loading ? 
+			  <div className="loading">
+				<span className="loading-dots">🔥</span>
+				<p className="loading-text">Loading</p>
+			  </div> :
+			  <span>Process Video</span>
+			}
+			
 		</Button>
 		{result && <h1 style={{color: 'white'}}>Push-up count: {result}</h1>}
 	</div>

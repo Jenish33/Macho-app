@@ -1,0 +1,34 @@
+.login-container{
+	width: 100% !important;
+	height: 100% !important;
+	display: flex !important;
+	flex-direction: row !important;
+	justify-content: space-between !important;
+	
+}
+
+.logo-container{
+	/* width: 100% !important; */
+	height: 100% !important;
+	margin-left: 100px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: center !important;
+	align-items: center !important;
+}
+
+.signin-btn {
+	background-color: orange !important;
+	color: white !important;
+	border: none !important;
+	padding: 10px !important;
+	font-size: 25px !important;
+	border-radius: 50px !important;
+	width: 350px !important;
+	height: 80px !important;
+	margin-top: 25px !important;
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	padding: 10px !important;
+}
